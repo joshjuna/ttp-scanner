@@ -1,5 +1,13 @@
-echo "Executing at `date` for $1" | tee ttp.out
-result=$(curl -s 'https://ttp.cbp.dhs.gov/schedulerapi/locations/'$1'/slots?startTimestamp=2024-09-07T00:00&endTimestamp=2024-10-10T00%3A00')
+#!/bin/bash
+
+if [ -z "$1" ]; then
+    locationId=5020
+else
+    locationId="$1"
+fi
+
+echo "Executing at `date` for $locationId" | tee ttp.out
+result=$(curl -s 'https://ttp.cbp.dhs.gov/schedulerapi/locations/'$locationId'/slots?startTimestamp=2024-09-07T00:00&endTimestamp=2024-10-10T00%3A00')
 #echo $result | jq
 activeResult=$(jq -n --argjson arr "$result" '$arr | flatten | map(select(.active? and .active != 0))')
 echo $activeResult | jq | tee ttp.out
